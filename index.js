@@ -30,21 +30,16 @@ function PcapWriter(file, snaplen, linktype) {
  * @param  {Number} ts  Timestamp [optional].
  */
 PcapWriter.prototype.writePacket = function(pkt, ts) {
-  if (!ts) { // if no timestamp is provided then default to current.
-    ts = (new Date()).getTime() * 1000;
-  }
-  var n = pkt.length;
   var ph = new PacketHeader({
-    tv_sec: parseInt(parseInt(ts, Constants.INT_BASE) / Constants.M_SEC, Constants.INT_BASE),
-    tv_usec: parseInt(((ts / Constants.M_SEC) - parseInt(ts/Constants.M_SEC, Constants.INT_BASE)) *
-      Constants.M_SEC_F, Constants.INT_BASE),
-    caplen: n,
-    len: n
+    tv_sec: pkt.header.timestampSeconds,
+    tv_usec: pkt.header.timestampMicroseconds,
+    caplen: pkt.header.capturedLength,
+    len: pkt.header.originalLength 
   });
   // write packet header
   this._fs.write(new Buffer(ph.toString(), Constants.HEADER_ENCODING));
   // write packet data
-  this._fs.write(pkt);
+  this._fs.write(pkt.data);
 };
 
 /**
