@@ -15,8 +15,12 @@ var Constants = require('./lib/constants');
  * Also writes Global header in the file.
  * @param {String} file  Name of the file to be crated with file path.
  */
-function PcapWriter(file, snaplen, linktype) {
-  this._fs = fs.createWriteStream(file);
+function PcapWriter(dest, snaplen, linktype) {
+  if(typeof(dest) == 'string') {
+    this._fs = fs.createWriteStream(dest);
+  } else {
+    this._fs = dest;
+  }
   var options = {};
   if (snaplen) { options.snaplen = snaplen; }
   if (linktype) { options.linktype = linktype; }
